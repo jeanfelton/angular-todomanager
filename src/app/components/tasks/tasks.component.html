@@ -1,0 +1,161 @@
+<div class="search-box">
+  <div class="filter-area">
+    <div>
+      <input
+        id="due_date"
+        name="due_date"
+        class="form-control"
+        matInput
+        type="datetime-local"
+        [(ngModel)]="filterDueDate"
+      />
+    </div>
+    <div>
+      <select 
+      id="priority" 
+      name="priority" 
+      class="form-control"
+      [(ngModel)]="filterPriority"
+      >
+        <option value="">Select</option>
+        <option value="1">Normal</option>
+        <option value="2">Mid</option>
+        <option value="3">High</option>
+      </select>
+    </div>
+    <div>
+      <button type="button" (click)="filterData()" class="btn btn-outline-dark">Filter</button>
+    </div>
+  </div>
+  <div>
+    <button class="btn-primary" (click)="openModal()">Add Task</button>
+  </div>
+</div>
+<div class="data-table">
+  <div class="loading-container" *ngIf="loading">Loading....</div>
+
+  <div class="task-list-container">
+    <div class="priority-table">
+      <h3>High</h3>
+
+      <div
+        cdkDropList
+        #taskListHigh="cdkDropList"
+        [cdkDropListData]="taskListHighArr"
+        [cdkDropListConnectedTo]="[taskListMid]"
+        (cdkDropListDropped)="drop($event)"
+        class="example-list"
+        id="3"
+      >
+        <div
+          class="drag-item"
+          *ngFor="let item of taskListHighArr"
+          cdkDrag
+          [cdkDragData]="item"
+        >
+          <mat-card>
+            <mat-card-content>
+              <div><span class="title">Message :</span> {{ item.message }}</div>
+              <div>
+                <span class="title">Due Date :</span> {{ item.due_date }}
+              </div>
+              <div>
+                <span class="title">Assigned :</span>
+                {{ item.assigned_name }}
+              </div>
+            </mat-card-content>
+            <mat-card-actions>
+              <button (click)="openModal(item)" class="btn btn-outline-dark mr-2">
+                Edit
+              </button>
+              <button (click)="onDelete(item.id)" class="btn btn-outline-dark">
+                Delete
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+    <div class="priority-table">
+      <h3>Medium</h3>
+
+      <div
+        cdkDropList
+        #taskListMid="cdkDropList"
+        [cdkDropListData]="taskListMidArr"
+        [cdkDropListConnectedTo]="[taskListHigh, taskListNormal]"
+        (cdkDropListDropped)="drop($event)"
+        class="example-list"
+        id="2"
+      >
+        <div
+          class="drag-item"
+          *ngFor="let item of taskListMidArr"
+          cdkDrag
+          [cdkDragData]="item"
+        >
+          <mat-card>
+            <mat-card-content>
+              <div><span class="title">Message :</span> {{ item.message }}</div>
+              <div>
+                <span class="title">Due Date :</span> {{ item.due_date }}
+              </div>
+              <div>
+                <span class="title">Assigned :</span>
+                {{ item.assigned_name }}
+              </div>
+            </mat-card-content>
+            <mat-card-actions>
+              <button (click)="openModal(item)" class="btn btn-outline-dark mr-2">
+                Edit
+              </button>
+              <button (click)="onDelete(item.id)" class="btn btn-outline-dark">
+                Delete
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+    <div class="priority-table">
+      <h3>Normal</h3>
+      <div
+        cdkDropList
+        #taskListNormal="cdkDropList"
+        [cdkDropListData]="taskListNormalArr"
+        [cdkDropListConnectedTo]="[taskListHigh, taskListMid]"
+        (cdkDropListDropped)="drop($event)"
+        class="example-list"
+        id="1"
+      >
+        <div
+          class="drag-item"
+          *ngFor="let item of taskListNormalArr"
+          cdkDrag
+          [cdkDragData]="item"
+        >
+          <mat-card>
+            <mat-card-content>
+              <div><span class="title">Message :</span> {{ item.message }}</div>
+              <div>
+                <span class="title">Due Date :</span> {{ item.due_date }}
+              </div>
+              <div>
+                <span class="title">Assigned :</span>
+                {{ item.assigned_name }}
+              </div>
+            </mat-card-content>
+            <mat-card-actions>
+              <button (click)="openModal(item)" class="btn btn-outline-dark mr-2">
+                Edit
+              </button>
+              <button (click)="onDelete(item.id)" class="btn btn-outline-dark">
+                Delete
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

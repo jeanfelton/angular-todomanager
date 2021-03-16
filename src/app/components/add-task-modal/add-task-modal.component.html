@@ -1,0 +1,72 @@
+<div class="modal-header">
+  <h4 class="modal-title">Add Task</h4>
+  <button
+    type="button"
+    class="close"
+    aria-label="Close"
+    (click)="activeModal.dismiss('Cross click')"
+  >
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form [formGroup]="taskForm" (ngSubmit)="onFormSubmit()">
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="message">Message <span class="input-required">*</span></label>
+      <div class="input-group">
+        <input
+          id="message"
+          name="message"
+          class="form-control"
+          formControlName="message"
+        />
+      </div>
+
+      <label for="Priority">Priority<span class="input-required">*</span></label>
+      <div class="input-group">
+        <select
+          id="priority"
+          name="priority"
+          class="form-control"
+          formControlName="priority"
+        >
+          <option value="">Select</option>
+          <option value="1">Normal</option>
+          <option value="2">Mid</option>
+          <option value="3">High</option>
+        </select>
+      </div>
+
+      <label for="assigned_to">Assigned To</label>
+      <div class="input-group">
+        <select
+          id="assigned_to"
+          name="assigned_to"
+          class="form-control"
+          formControlName="assigned_to"
+        >
+          <option value="">Select</option>
+          <option *ngFor="let user of userList" [value]="user.id">
+            {{ user.name }}
+          </option>
+        </select>
+      </div>
+
+      <label for="due_date">Due Date</label>
+      <div class="input-group">
+        <input
+          id="due_date"
+          name="due_date"
+          class="form-control"
+          formControlName="due_date"
+          matInput
+          type="datetime-local"
+          date="true" time="true" minutes="true" seconds="true"
+        />
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-outline-dark">Save</button>
+  </div>
+</form>
