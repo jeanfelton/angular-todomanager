@@ -1,61 +1,86 @@
 .search-box {
+  display: flex;
+  margin: 10px;
+  justify-content: space-around;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid silver;
+  padding: 10px;
+  box-shadow: 2px 2px #dbdbdb;
+  min-height: 100px;
+
+  .fiter-wrapper {
     display: flex;
     margin: 10px;
     justify-content: space-around;
     align-items: center;
+    width: 100%;
     border: 1px solid silver;
-    padding: 10px;
-    box-shadow: 2px 2px #dbdbdb;
     min-height: 100px;
 
-    .filter-area{
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border: 1px solid silver;
-        width: 500px;
+    .filter-area {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 500px;
     }
-    
+  }
+
+  .search-wrapper {
+    display: flex;
+    margin: 10px;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    border: 1px solid silver;
+
+    min-height: 100px;
+    * {
+      margin: 0 10px;
+    }
+  }
 }
 
 .data-table {
-    display: flex;
-    flex-direction: column;
-    margin: 10px;
-    justify-content: space-around;
-    border: 1px solid silver;
-    padding: 10px;
-    box-shadow: 2px 2px #dbdbdb;
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+  justify-content: space-around;
+  border: 1px solid silver;
+  padding: 10px;
+  box-shadow: 2px 2px #dbdbdb;
 
-    .task-list-container{
-        display: flex;
-        margin: 10px;
+  .loading-container {
+    display: flex;
+    justify-content: center;
+  }
+
+  .task-list-container {
+    display: flex;
+    margin: 10px;
     justify-content: space-between;
 
-        .priority-table{
-            width: 300px;
-            max-width: 100%;
+    .priority-table {
+      width: 300px;
+      max-width: 100%;
 
-            .example-list {
-                border: solid 1px #ccc;
-                min-height: 70vh;
-                background: white;
-                border-radius: 4px;
-                overflow: hidden;
-                display: block;
-                padding: 5px;
+      .priority-list {
+        border: solid 1px #ccc;
+        min-height: 70vh;
+        background: white;
+        border-radius: 4px;
+        overflow: hidden;
+        display: block;
+        padding: 5px;
 
-                .title{
-                    font-weight: bold;                   
-                }
-
-                .drag-item{
-                    margin: 5px 0;
-                }
-              }
+        .title {
+          font-weight: bold;
         }
 
+        .drag-item {
+          margin: 5px 0;
+        }
+      }
     }
-
-    
+  }
 }

@@ -2,13 +2,12 @@ import { TasksModel } from './../../models/tasks.model';
 import { TasksService } from './../../core/http/tasks.service';
 import { AddTaskModalComponent } from './../add-task-modal/add-task-modal.component';
 import { Component, OnInit } from '@angular/core';
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SnackbarService } from 'src/app/core/snackbar/snackbar.service';
 import {
   CdkDragDrop,
   moveItemInArray,
-  transferArrayItem,
-  CdkDropList,
+  transferArrayItem,  
 } from '@angular/cdk/drag-drop';
 import * as moment from 'moment';
 
@@ -18,9 +17,13 @@ import * as moment from 'moment';
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.scss'],
 })
+
+/**
+ * Class representing a list of task and to manage features like serach, filter etc.
+ */
 export class TasksComponent implements OnInit {
-  closeResult: any;
-  getDismissReason: any;
+
+    
   loading = false;
   dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
 
@@ -29,8 +32,9 @@ export class TasksComponent implements OnInit {
   taskListMidArr: TasksModel[];
   taskListNormalArr: TasksModel[];
 
-  filterDueDate: any = '';
-  filterPriority: any = '';
+  filterDueDate: string = '';
+  filterPriority: string = '';
+  searchText: string = "";
 
   constructor(
     private modalService: NgbModal,
@@ -81,8 +85,7 @@ export class TasksComponent implements OnInit {
     const modalRef = this.modalService.open(AddTaskModalComponent);
     modalRef.componentInstance.taskData = editTaskObject;
     modalRef.result.then(
-      (result) => {
-        this.closeResult = `Closed with: ${result}`;
+      (result) => {        
         console.log('modal close result', result);
         if(result.action === "add") {
           this.snackBarService.openSnackBar('Successfully added','Success');
@@ -94,8 +97,7 @@ export class TasksComponent implements OnInit {
         }       
        
       },
-      (reason) => {
-        this.closeResult = 'Dismissed';
+      (reason) => {        
         console.log('modal close reason', reason);
       }
     );
@@ -180,7 +182,8 @@ export class TasksComponent implements OnInit {
       
     console.log(this.taskListArr);   
     console.log('filterPriority',this.filterPriority); 
-    console.log('filterDueDate',this.filterDueDate);       
+    console.log('filterDueDate',this.filterDueDate);
+    this.searchText = "";       
 
     if (this.filterPriority !== '' || this.filterDueDate !== '') {
       
@@ -232,6 +235,22 @@ export class TasksComponent implements OnInit {
 
     return filteredArr;
 
+  }
+
+  searchClick() {
+    console.log('searchText',this.searchText)
+    const searchArray =  this.taskListArr.filter((item)=>{
+      console.log(item)
+      console.log(item.message.search(this.searchText))
+      const messageText =  item.message.toLowerCase();
+      const searchText =  this.searchText.toLowerCase();
+    
+       return messageText.includes(searchText) 
+      
+    })
+
+    console.log('searchArray',searchArray)
+    this.sortDataToPriority(searchArray);
   }
 
 

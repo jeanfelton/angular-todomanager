@@ -1,40 +1,69 @@
-<div class="search-box">
-  <div class="filter-area">
+<div class="search-box"> 
+
+  <div class="fiter-wrapper">
+    <div class="filter-area">
+      <div>
+        <input
+          id="due_date"
+          name="due_date"
+          class="form-control"
+          matInput
+          type="datetime-local"
+          [(ngModel)]="filterDueDate"
+        />
+      </div>
+      <div>
+        <select
+          id="priority"
+          name="priority"
+          class="form-control"
+          [(ngModel)]="filterPriority"
+        >
+          <option value="">Select</option>
+          <option value="1">Normal</option>
+          <option value="2">Mid</option>
+          <option value="3">High</option>
+        </select>
+      </div>
+      <div>
+        <button type="button" (click)="filterData()" class="btn btn-outline-dark">
+          Filter
+        </button>
+      </div>
+    </div>
+    <div>
+      <button class="btn-primary" (click)="openModal()">Add Task</button>
+    </div>
+  </div>
+  <div class="search-wrapper">
     <div>
       <input
-        id="due_date"
+        id="search_text"
         name="due_date"
         class="form-control"
         matInput
-        type="datetime-local"
-        [(ngModel)]="filterDueDate"
+        [(ngModel)]="searchText"
+        placeholder="enter message text"
       />
     </div>
     <div>
-      <select 
-      id="priority" 
-      name="priority" 
-      class="form-control"
-      [(ngModel)]="filterPriority"
-      >
-        <option value="">Select</option>
-        <option value="1">Normal</option>
-        <option value="2">Mid</option>
-        <option value="3">High</option>
-      </select>
-    </div>
-    <div>
-      <button type="button" (click)="filterData()" class="btn btn-outline-dark">Filter</button>
+      <button class="btn btn-outline-dark" (click)="searchClick()">Search</button>
     </div>
   </div>
-  <div>
-    <button class="btn-primary" (click)="openModal()">Add Task</button>
-  </div>
+  
+  
+  
+  
+
+
 </div>
 <div class="data-table">
-  <div class="loading-container" *ngIf="loading">Loading....</div>
+  <div class="loading-container" *ngIf="loading">
+    <mat-progress-spinner mode="indeterminate" color="primary">
+    </mat-progress-spinner>
+  </div>
 
-  <div class="task-list-container">
+  <div class="task-list-container" *ngIf="!loading">
     <div class="priority-table">
       <h3>High</h3>
 
@@ -44,7 +73,7 @@
         [cdkDropListData]="taskListHighArr"
         [cdkDropListConnectedTo]="[taskListMid]"
         (cdkDropListDropped)="drop($event)"
-        class="example-list"
+        class="priority-list"
         id="3"
       >
         <div
@@ -65,7 +94,10 @@
               </div>
             </mat-card-content>
             <mat-card-actions>
-              <button (click)="openModal(item)" class="btn btn-outline-dark mr-2">
+              <button
+                (click)="openModal(item)"
+                class="btn btn-outline-dark mr-2"
+              >
                 Edit
               </button>
               <button (click)="onDelete(item.id)" class="btn btn-outline-dark">
@@ -85,7 +117,7 @@
         [cdkDropListData]="taskListMidArr"
         [cdkDropListConnectedTo]="[taskListHigh, taskListNormal]"
         (cdkDropListDropped)="drop($event)"
-        class="example-list"
+        class="priority-list"
         id="2"
       >
         <div
@@ -106,7 +138,10 @@
               </div>
             </mat-card-content>
             <mat-card-actions>
-              <button (click)="openModal(item)" class="btn btn-outline-dark mr-2">
+              <button
+                (click)="openModal(item)"
+                class="btn btn-outline-dark mr-2"
+              >
                 Edit
               </button>
               <button (click)="onDelete(item.id)" class="btn btn-outline-dark">
@@ -125,7 +160,7 @@
         [cdkDropListData]="taskListNormalArr"
         [cdkDropListConnectedTo]="[taskListHigh, taskListMid]"
         (cdkDropListDropped)="drop($event)"
-        class="example-list"
+        class="priority-list"
         id="1"
       >
         <div
@@ -146,7 +181,10 @@
               </div>
             </mat-card-content>
             <mat-card-actions>
-              <button (click)="openModal(item)" class="btn btn-outline-dark mr-2">
+              <button
+                (click)="openModal(item)"
+                class="btn btn-outline-dark mr-2"
+              >
                 Edit
               </button>
               <button (click)="onDelete(item.id)" class="btn btn-outline-dark">

@@ -1,9 +1,7 @@
 import { TasksService } from './../../core/http/tasks.service';
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormArray, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { NgbActiveModal, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
-import { SnackbarService } from 'src/app/core/snackbar/snackbar.service';
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import * as moment from 'moment';
 
 @Component({
@@ -16,8 +14,10 @@ export class AddTaskModalComponent implements OnInit {
 
   modelDate: NgbDateStruct;
   userList: any[];
-  dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
-  taskId = "";  
+  dateTimeFormat: string = 'YYYY-MM-DD HH:mm:ss';
+  taskId : string = "";
+  errorMsg: string = ""; 
+  titleText: string = "Add Task";
 
   taskForm = this.fb.group({    
     message: ['', Validators.required],
@@ -29,8 +29,7 @@ export class AddTaskModalComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private fb: FormBuilder,
-    private taskService: TasksService,
-    private snackBarService: SnackbarService
+    private taskService: TasksService,    
   ) {
     this.taskService.getUsers().subscribe((res) => {
       console.log('Users', res);
@@ -51,7 +50,8 @@ export class AddTaskModalComponent implements OnInit {
   initializeForm() {
 
     if(this.taskData) {
-      console.log('edit mode')
+      console.log('edit mode');
+      this.titleText = "Edit Task";
       this.taskId = this.taskData.id
       const formData = {
         message: this.taskData.message,
@@ -67,14 +67,14 @@ export class AddTaskModalComponent implements OnInit {
   onFormSubmit() {
 
     console.log('onFormSubmit');
-    console.log('this.taskForm.value', this.taskForm.value);
+    console.log('this.taskForm', this.taskForm);
 
     if (!this.taskForm.valid) {
-      this.snackBarService.openSnackBar('Fill mandatory fields', 'Error');
+      this.errorMsg = 'Fill mandatory fields';      
     }
 
     if (this.taskForm.valid) {
-
+      this.errorMsg = '';
       if(this.taskId !== "") {
         this.editApiCall(this.taskId);
       } else {

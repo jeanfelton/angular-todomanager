@@ -14,7 +14,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import {MatCardModule} from '@angular/material/card';
-import { MatButtonModule} from '@angular/material/button'; 
+import { MatButtonModule} from '@angular/material/button';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner' ;
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
 
@@ -37,7 +38,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     MatTableModule,
     MatCardModule,
     MatButtonModule,
-    DragDropModule
+    DragDropModule,
+    MatProgressSpinnerModule
   ],
   providers: [],
   bootstrap: [AppComponent],
