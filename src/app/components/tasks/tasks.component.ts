@@ -28,6 +28,7 @@ export class TasksComponent implements OnInit {
    * @type {true | false}
    */  
   loading : true | false = false;
+  loadingDelete : true | false = false;
 
   /**
    * Date format while submitting data
@@ -159,8 +160,10 @@ export class TasksComponent implements OnInit {
    */
 
   onDelete(id:string) {
-    this.tasksService.deleteTask(id).subscribe((res) => {      
-      if (res.status === 'success') {        
+    this.loadingDelete = true;
+    this.tasksService.deleteTask(id).subscribe((res) => {
+      this.loadingDelete  = false;       
+      if (res.status === 'success') {           
         this.snackBarService.openSnackBar('Successfully deleted','Success');
         this.removeTaskFromList(id);
       } else {

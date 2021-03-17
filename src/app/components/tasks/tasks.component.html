@@ -50,10 +50,6 @@
       <button class="btn btn-outline-dark" (click)="searchClick()">Search</button>
     </div>
   </div>
-  
-  
-  
-  
 
 
 </div>
@@ -65,7 +61,7 @@
 
   <div class="task-list-container" *ngIf="!loading">
     <div class="priority-table">
-      <h3>High</h3>
+      <h2>High</h2>
 
       <div
         cdkDropList
@@ -100,16 +96,16 @@
               >
                 Edit
               </button>
-              <button (click)="onDelete(item.id)" class="btn btn-outline-dark">
+              <button (click)="onDelete(item.id)" [disabled]="loadingDelete" class="btn btn-outline-dark">
                 Delete
               </button>
             </mat-card-actions>
-          </mat-card>
+          </mat-card>         
         </div>
       </div>
     </div>
     <div class="priority-table">
-      <h3>Medium</h3>
+      <h2>Medium</h2>
 
       <div
         cdkDropList
@@ -144,7 +140,7 @@
               >
                 Edit
               </button>
-              <button (click)="onDelete(item.id)" class="btn btn-outline-dark">
+              <button (click)="onDelete(item.id)" [disabled]="loadingDelete" class="btn btn-outline-dark">
                 Delete
               </button>
             </mat-card-actions>
@@ -153,7 +149,7 @@
       </div>
     </div>
     <div class="priority-table">
-      <h3>Normal</h3>
+      <h2>Normal</h2>
       <div
         cdkDropList
         #taskListNormal="cdkDropList"
@@ -187,7 +183,7 @@
               >
                 Edit
               </button>
-              <button (click)="onDelete(item.id)" class="btn btn-outline-dark">
+              <button (click)="onDelete(item.id)" [disabled]="loadingDelete" class="btn btn-outline-dark">
                 Delete
               </button>
             </mat-card-actions>

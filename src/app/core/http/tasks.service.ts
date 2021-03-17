@@ -2,17 +2,19 @@ import { TasksModel } from './../../models/tasks.model';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environment/environment'
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class TasksService {
 
-  private endPoint = 'https://devza.com/tests/tasks';
+  private endPoint = environment.APIENDPOINT;
   private headers = new HttpHeaders();
 
-  createAuthorizationHeader() {
-    return this.headers.append('AuthToken', 'lOrDOdDoC0Hn5wxSW0pia8LR826aBC7a');
+  createAuthorizationHeader() {    
+    return this.headers.append('AuthToken', environment.APIKEY);    
   }
 
   constructor(private _http: HttpClient) {}

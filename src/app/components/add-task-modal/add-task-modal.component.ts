@@ -15,6 +15,12 @@ export class AddTaskModalComponent implements OnInit {
   @Input() taskData;
 
   /**
+   * Loading state variable
+   * @type {true | false}
+   */  
+   loading : true | false = false;
+   
+  /**
    * User list
    * @type {array}
    */
@@ -112,7 +118,7 @@ export class AddTaskModalComponent implements OnInit {
    * Form submit function with vaildation check and Add / Edit API call
    */
   onFormSubmit() {
-
+    console.log(this.taskForm);
     if (!this.taskForm.valid) {
       this.errorMsg = 'Fill mandatory fields';      
     }
@@ -133,15 +139,18 @@ export class AddTaskModalComponent implements OnInit {
    */
   addApiCall() {
 
+    this.loading = true;
+
     const transDateFormat = this.transformDate(this.taskForm.value.due_date);
     const userName = this.findUserName(this.taskForm.value.assigned_to);
-
+    
     this.taskService
         .addTask({
           ...this.taskForm.value,
           due_date: transDateFormat,
         })
-        .subscribe((res) => {          
+        .subscribe((res) => {
+          this.loading = false;          
           if (res.status === 'success') {            
             const editedTaskItem = {
               ...this.taskForm.value,
@@ -166,6 +175,8 @@ export class AddTaskModalComponent implements OnInit {
    */
   editApiCall(id:string) {
 
+    this.loading = true;   
+
     const transDateFormat = this.transformDate(this.taskForm.value.due_date);
     const userName = this.findUserName(this.taskForm.value.assigned_to);
 
@@ -175,7 +186,8 @@ export class AddTaskModalComponent implements OnInit {
           due_date: transDateFormat,
           id:id
         })
-        .subscribe((res) => {          
+        .subscribe((res) => {
+          this.loading = false;           
           if (res.status === 'success') {            
             const editedTaskItem = {
               ...this.taskForm.value,
