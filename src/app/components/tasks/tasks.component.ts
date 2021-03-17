@@ -23,18 +23,52 @@ import * as moment from 'moment';
  */
 export class TasksComponent implements OnInit {
 
-    
-  loading = false;
-  dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
+  /**
+   * Loading state variable
+   * @type {true | false}
+   */  
+  loading : true | false = false;
 
+  /**
+   * Date format while submitting data
+   * @type {string}
+   */
+  dateTimeFormat: string = 'YYYY-MM-DD HH:mm:ss';
+
+  /**
+   * Task list array sorted corresponding to priority
+   * @type {TasksModel[]}
+   */
   taskListArr: TasksModel[];
   taskListHighArr: TasksModel[];
   taskListMidArr: TasksModel[];
   taskListNormalArr: TasksModel[];
 
+  /**
+   * Filter value using due date of task
+   * @type {string}
+   */
   filterDueDate: string = '';
+
+  /**
+   * Filter value using priority of task 
+   * @type {string}
+   */
   filterPriority: string = '';
+
+  /**
+   * Search value using message key of task 
+   * @type {string}
+   */
   searchText: string = "";
+
+
+  /**
+   * @constructor
+   * @param {NgbModal} modalService - Angular bootstrap modal service.
+   * @param {TasksService} tasksService - Tasks CRUD api service.
+   * @param {SnackbarService} snackBarService - Toast message service.
+   */
 
   constructor(
     private modalService: NgbModal,
@@ -42,9 +76,15 @@ export class TasksComponent implements OnInit {
     private snackBarService: SnackbarService
   ) {}
 
+ 
+
   ngOnInit(): void {
     this.initTaskData();
   }
+
+   /**
+   * Initialize component with tasks items and sort function  
+   */
 
   initTaskData() {
     this.taskListArr = [];
@@ -53,15 +93,21 @@ export class TasksComponent implements OnInit {
     this.taskListNormalArr = [];
     this.loading = true;
 
-    this.tasksService.getTasks().subscribe((res) => {
-      console.log('getTasks res', res);
+    this.tasksService.getTasks().subscribe((res) => {      
       this.loading = false;
       if (res.status === 'success') {
         this.taskListArr = res.tasks;
         this.sortDataToPriority(res.tasks);
+      } else {
+        this.snackBarService.openSnackBar('Some error occured!!','Error');
       }
     });
   }
+
+  /**
+   * Sort tasks items based on priority
+   * @param {array} taskDataArr : TaskItemsArray   
+   */
 
   sortDataToPriority(taskDataArr = []) {
     this.taskListNormalArr = [];
@@ -80,13 +126,17 @@ export class TasksComponent implements OnInit {
     });
   }
 
-  openModal(editTaskObject="") {   
+  /**
+   * Open modal component to  add / edit task
+   * @param {object} editTaskObject : TaskItemsObject   
+   */
+
+  openModal(editTaskObject=null) {   
 
     const modalRef = this.modalService.open(AddTaskModalComponent);
     modalRef.componentInstance.taskData = editTaskObject;
     modalRef.result.then(
-      (result) => {        
-        console.log('modal close result', result);
+      (result) => {
         if(result.action === "add") {
           this.snackBarService.openSnackBar('Successfully added','Success');
           this.addNewTaskToList(result.value);
@@ -98,31 +148,36 @@ export class TasksComponent implements OnInit {
        
       },
       (reason) => {        
-        console.log('modal close reason', reason);
+        //console.log('modal close reason', reason);
       }
     );
   }
 
-  onDelete(id) {
-    console.log('OnDelete ID', id);
-    console.log(typeof id);    
-    
-    this.tasksService.deleteTask(id).subscribe((res) => {
-      console.log('deleteTask res', res);
-      if (res.status === 'success') {
-        console.log('Delete success');
+  /**
+   * Delete function for task item
+   * @param {string} id : task id to delete   
+   */
+
+  onDelete(id:string) {
+    this.tasksService.deleteTask(id).subscribe((res) => {      
+      if (res.status === 'success') {        
         this.snackBarService.openSnackBar('Successfully deleted','Success');
         this.removeTaskFromList(id);
+      } else {
+        this.snackBarService.openSnackBar('Some error occured!!','Error');
       }
     });
   }
 
-  removeTaskFromList(id) {
+  /**
+   * Remove function for task item from DOM
+   * @param {string} id : task id to delete   
+   */
+  removeTaskFromList(id:string) {
 
     const indexOfDeletedId =  this.taskListArr.findIndex((item)=>{
       return item.id === id
-    })
-    console.log('indexOfDeletedId',indexOfDeletedId);
+    })    
     const copyTaskArr = [
       ...this.taskListArr
     ];
@@ -132,32 +187,38 @@ export class TasksComponent implements OnInit {
 
   }
 
-  addNewTaskToList(newItem){
+  /**
+   * Add function for task item to DOM
+   * @param {TasksModel} newItem : task object   
+   */
+  addNewTaskToList(newItem:TasksModel){
     this.taskListArr.push(newItem);
     this.sortDataToPriority(this.taskListArr);
   }
 
-  updateTaskToList(item){
+  /**
+   * Update function for task item to DOM
+   * @param {TasksModel} item : task object   
+   */
+  updateTaskToList(item:TasksModel){
     this.removeTaskFromList(item.id)
     this.taskListArr.push(item);
     this.sortDataToPriority(this.taskListArr);
   }
   
-
+/**
+   * Drag and Drop core function - Angular Material CDK
+   * @param {CdkDragDrop} event : drag and drop object   
+   */
   drop(event: CdkDragDrop<string[]>) {
-    if (event.previousContainer === event.container) {
-      console.log('moveItemInArray', event.item.data);
+    if (event.previousContainer === event.container) {      
       moveItemInArray(
         event.container.data,
         event.previousIndex,
         event.currentIndex
       );
     } else {
-      console.log('transferArrayItem', event.item.data);
-      console.log('transferArrayItem container.id', event.container.id);
-
       this.changeTaskPriority(event.item.data, event.container.id);
-
       transferArrayItem(
         event.previousContainer.data,
         event.container.data,
@@ -167,22 +228,27 @@ export class TasksComponent implements OnInit {
     }
   }
 
+  /**
+   * Update function for task priority while drag and drop
+   * @param {string} containerId : task priority of drag and drop container  
+   * @param {TasksModel} taskObject : task object   
+   */
   changeTaskPriority(taskObject: TasksModel, containerId: string) {
     this.tasksService
       .editTask({ ...taskObject, priority: containerId })
-      .subscribe((res) => {
-        console.log('res', res);
+      .subscribe((res) => {        
         if (res.status === 'success') {
           this.snackBarService.openSnackBar('Updated Priority', 'Message');
+        } else {
+          this.snackBarService.openSnackBar('Some error occured!!', 'Error');
         }
       });
   }
 
+  /**
+   * Filter base function    
+   */
   filterData() {
-      
-    console.log(this.taskListArr);   
-    console.log('filterPriority',this.filterPriority); 
-    console.log('filterDueDate',this.filterDueDate);
     this.searchText = "";       
 
     if (this.filterPriority !== '' || this.filterDueDate !== '') {
@@ -195,6 +261,9 @@ export class TasksComponent implements OnInit {
     }
   }
 
+  /**
+   * Filter sub function - detailed logic   
+   */
   filterArrayOnDueDatePriority () {
 
     const filteredArr = []
@@ -237,19 +306,17 @@ export class TasksComponent implements OnInit {
 
   }
 
-  searchClick() {
-    console.log('searchText',this.searchText)
-    const searchArray =  this.taskListArr.filter((item)=>{
-      console.log(item)
-      console.log(item.message.search(this.searchText))
+  /**
+   * Search function based on search keyword entered for message   
+   */
+  searchClick() {    
+    const searchArray =  this.taskListArr.filter((item)=>{      
       const messageText =  item.message.toLowerCase();
       const searchText =  this.searchText.toLowerCase();
     
        return messageText.includes(searchText) 
       
     })
-
-    console.log('searchArray',searchArray)
     this.sortDataToPriority(searchArray);
   }
 

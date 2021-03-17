@@ -1,8 +1,10 @@
+import { UsersModel } from './../../models/users.model';
 import { TasksService } from './../../core/http/tasks.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { NgbActiveModal, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 import * as moment from 'moment';
+
 
 @Component({
   selector: 'app-add-task-modal',
@@ -12,13 +14,40 @@ import * as moment from 'moment';
 export class AddTaskModalComponent implements OnInit {
   @Input() taskData;
 
-  modelDate: NgbDateStruct;
-  userList: any[];
+  /**
+   * User list
+   * @type {array}
+   */
+  userList: UsersModel[];
+
+  /**
+   * Date format while submitting data
+   * @type {string}
+   */
   dateTimeFormat: string = 'YYYY-MM-DD HH:mm:ss';
+  dateTimeFormatToFormInput: string= 'YYYY-MM-DDTHH:mm';
+
+  /**
+   * task id for edit case
+   * @type {string}
+   */
   taskId : string = "";
+
+  /**
+   * Add / Edit form validation message
+   * @type {string}
+   */
   errorMsg: string = ""; 
+
+  /**
+   * Add / Edit title text
+   * @type {string}
+   */
   titleText: string = "Add Task";
 
+  /**
+   * Formbuilder  
+   */
   taskForm = this.fb.group({    
     message: ['', Validators.required],
     due_date: [''],
@@ -26,36 +55,51 @@ export class AddTaskModalComponent implements OnInit {
     assigned_to: [''],
   });
 
+  /**
+   * @constructor
+   * @param {NgbActiveModal} activeModal - Angular bootstrap modal service.
+   * @param {TasksService} tasksService - Tasks CRUD api service.
+   * @param {FormBuilder} fb - Form builder service.
+   */
   constructor(
     public activeModal: NgbActiveModal,
     private fb: FormBuilder,
     private taskService: TasksService,    
   ) {
-    this.taskService.getUsers().subscribe((res) => {
-      console.log('Users', res);
+    this.initUserArr();
+  } 
+ 
+
+  ngOnInit(): void {
+    this.initializeForm();    
+  }
+
+
+  /**
+   * Initialize user list array 
+   */
+   initUserArr() {
+    this.taskService.getUsers().subscribe((res) => {      
       if (res.status === 'success') {
         this.userList = res.users;
       }
     });
   }
 
- 
-
-  ngOnInit(): void {
-    console.log('edit task data', this.taskData);
-    
-    this.initializeForm();    
-  }
-
+  /**
+   * Initialize form with task data in edit case
+   */
   initializeForm() {
 
     if(this.taskData) {
-      console.log('edit mode');
+      
+      const inputDate = moment(this.taskData.due_date).format(this.dateTimeFormatToFormInput);
+      
       this.titleText = "Edit Task";
       this.taskId = this.taskData.id
       const formData = {
         message: this.taskData.message,
-        due_date: this.taskData.due_date,
+        due_date:inputDate ,
         priority: this.taskData.priority,
         assigned_to: this.taskData.assigned_to,
       }
@@ -64,10 +108,10 @@ export class AddTaskModalComponent implements OnInit {
     
   }
 
+  /**
+   * Form submit function with vaildation check and Add / Edit API call
+   */
   onFormSubmit() {
-
-    console.log('onFormSubmit');
-    console.log('this.taskForm', this.taskForm);
 
     if (!this.taskForm.valid) {
       this.errorMsg = 'Fill mandatory fields';      
@@ -79,26 +123,25 @@ export class AddTaskModalComponent implements OnInit {
         this.editApiCall(this.taskId);
       } else {
         this.addApiCall();    
-      }
-
-       
+      }       
     }
-  }
 
+  }
+  
+  /**
+   *  Add task data API call
+   */
   addApiCall() {
 
     const transDateFormat = this.transformDate(this.taskForm.value.due_date);
     const userName = this.findUserName(this.taskForm.value.assigned_to);
-
-    console.log('user find',userName)
 
     this.taskService
         .addTask({
           ...this.taskForm.value,
           due_date: transDateFormat,
         })
-        .subscribe((res) => {
-          console.log('res addTask', res);
+        .subscribe((res) => {          
           if (res.status === 'success') {            
             const editedTaskItem = {
               ...this.taskForm.value,
@@ -111,12 +154,17 @@ export class AddTaskModalComponent implements OnInit {
               value:editedTaskItem
             }
             this.activeModal.close(resultObject);
+          } else {
+            this.errorMsg = 'Some error occured!!';  
           }
         });
 
   }
 
-  editApiCall(id) {
+  /**
+   *  Edit task data API call
+   */
+  editApiCall(id:string) {
 
     const transDateFormat = this.transformDate(this.taskForm.value.due_date);
     const userName = this.findUserName(this.taskForm.value.assigned_to);
@@ -127,8 +175,7 @@ export class AddTaskModalComponent implements OnInit {
           due_date: transDateFormat,
           id:id
         })
-        .subscribe((res) => {
-          console.log('res editTask', res);
+        .subscribe((res) => {          
           if (res.status === 'success') {            
             const editedTaskItem = {
               ...this.taskForm.value,
@@ -141,16 +188,27 @@ export class AddTaskModalComponent implements OnInit {
               value:editedTaskItem
             }
             this.activeModal.close(resultObject);
+          } else {                       
+              this.errorMsg = 'Some error occured';
           }
         });
 
-  }
+  }  
 
-  
-
+  /**
+   * Transform date time to 'YYYY-MM-DD HH:mm:ss' format
+   * @param dateValue 
+   * 
+   */
   transformDate(dateValue){
     return moment(dateValue).format(this.dateTimeFormat);
   }
+
+  /**
+   * Gets username from user id
+   * @param {string} id : user id
+   * @returns {string} user name
+   */
 
   findUserName(id){
     const user = this.userList.find((item)=>{
